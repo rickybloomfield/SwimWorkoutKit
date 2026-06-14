@@ -1,0 +1,201 @@
+{
+  "format" : "open-swim-workout",
+  "version" : "0.2",
+  "workout" : {
+    "categories" : [
+      "sprint"
+    ],
+    "course" : {
+      "length" : 25,
+      "unit" : "yd"
+    },
+    "groups" : [
+      {
+        "id" : "A"
+      },
+      {
+        "id" : "B"
+      },
+      {
+        "id" : "C"
+      }
+    ],
+    "sections" : [
+      {
+        "items" : [
+          {
+            "activity" : "mixed",
+            "distance" : 100,
+            "perRep" : [
+              {
+                "activity" : "swim",
+                "selector" : "1"
+              },
+              {
+                "activity" : "kick",
+                "selector" : "2"
+              },
+              {
+                "activity" : "pull",
+                "selector" : "3"
+              }
+            ],
+            "reps" : 3,
+            "sourceText" : "3x100 as swim/kick/pull",
+            "type" : "set"
+          }
+        ],
+        "name" : "Warmup",
+        "statedDistance" : 300
+      },
+      {
+        "items" : [
+          {
+            "distance" : 300,
+            "effort" : {
+              "percent" : 80,
+              "shape" : "descend"
+            },
+            "interval" : {
+              "mode" : "sendoff",
+              "sendoffs" : {
+                "A" : "4:40",
+                "B" : "4:50",
+                "C" : "5:00"
+              },
+              "targetRest" : ":40"
+            },
+            "reps" : 3,
+            "sourceText" : "3x300 free descend to 80% @4:40/4:50/5:00 (ideally :40 rest)",
+            "stroke" : "free",
+            "type" : "set"
+          },
+          {
+            "activity" : "kick",
+            "distance" : 100,
+            "effort" : {
+              "level" : "easy"
+            },
+            "interval" : {
+              "mode" : "rest",
+              "rest" : "1:00"
+            },
+            "reps" : 1,
+            "sourceText" : "100 kick easy r1:00",
+            "type" : "set"
+          },
+          {
+            "distance" : 200,
+            "effort" : {
+              "percent" : 90,
+              "shape" : "descend"
+            },
+            "interval" : {
+              "mode" : "sendoff",
+              "sendoffs" : {
+                "A" : "3:10",
+                "B" : "3:20",
+                "C" : "3:30"
+              },
+              "targetRest" : ":30"
+            },
+            "reps" : 4,
+            "sourceText" : "4x200 free descend to 90% @3:10/3:20/3:30 (ideally :30 rest)",
+            "stroke" : "free",
+            "type" : "set"
+          },
+          {
+            "activity" : "kick",
+            "distance" : 100,
+            "effort" : {
+              "level" : "easy"
+            },
+            "interval" : {
+              "mode" : "rest",
+              "rest" : "1:00"
+            },
+            "reps" : 1,
+            "sourceText" : "100 kick easy r1:00",
+            "type" : "set"
+          },
+          {
+            "distance" : 100,
+            "effort" : {
+              "percent" : 95,
+              "shape" : "descend"
+            },
+            "interval" : {
+              "mode" : "sendoff",
+              "sendoffs" : {
+                "A" : "1:30",
+                "B" : "1:40",
+                "C" : "1:50"
+              },
+              "targetRest" : ":20"
+            },
+            "reps" : 5,
+            "sourceText" : "5x100 choice descend to 95% @1:30/1:40/1:50 (ideally :20 rest)",
+            "stroke" : "choice",
+            "type" : "set"
+          },
+          {
+            "activity" : "kick",
+            "distance" : 100,
+            "effort" : {
+              "level" : "easy"
+            },
+            "interval" : {
+              "mode" : "rest",
+              "rest" : "1:00"
+            },
+            "reps" : 1,
+            "sourceText" : "100 kick easy r1:00",
+            "type" : "set"
+          },
+          {
+            "distance" : 50,
+            "effort" : {
+              "percent" : 100,
+              "shape" : "descend"
+            },
+            "interval" : {
+              "mode" : "sendoff",
+              "sendoffs" : {
+                "A" : "1:00",
+                "B" : "1:10"
+              },
+              "targetRest" : ":15"
+            },
+            "reps" : 6,
+            "sourceText" : "6x50 choice descend to 100% @1:00/1:10 (ideally :15 rest)",
+            "stroke" : "choice",
+            "type" : "set"
+          }
+        ],
+        "name" : "Main Set",
+        "statedDistance" : 2800
+      },
+      {
+        "items" : [
+          {
+            "distance" : 100,
+            "effort" : {
+              "level" : "easy"
+            },
+            "reps" : 1,
+            "sourceText" : "100 choice easy",
+            "stroke" : "choice",
+            "type" : "set"
+          }
+        ],
+        "name" : "Cool Down",
+        "statedDistance" : 100
+      }
+    ],
+    "statedTotal" : 3200,
+    "tags" : [
+
+    ],
+    "title" : "Friday — Sprint"
+  }
+}

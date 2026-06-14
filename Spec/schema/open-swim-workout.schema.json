@@ -1,0 +1,251 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openswimworkout.org/schema/0.2/open-swim-workout.schema.json",
+  "title": "Open Swim Workout",
+  "description": "An open interchange format for prescribed swimming workouts. v0.2",
+  "type": "object",
+  "required": ["format", "version", "workout"],
+  "properties": {
+    "format": { "const": "open-swim-workout" },
+    "version": { "type": "string", "pattern": "^0\\.[0-9]+$" },
+    "workout": { "$ref": "#/$defs/workout" }
+  },
+  "$defs": {
+    "time": {
+      "type": "string",
+      "description": "Duration: 'm:ss', ':ss', or bare seconds",
+      "pattern": "^(\\d+:[0-5]\\d|:\\d{1,2}|\\d+)$"
+    },
+    "stroke": {
+      "enum": ["free", "back", "breast", "fly", "im", "imo", "rimo", "stroke", "choice", "mixed"]
+    },
+    "activity": {
+      "enum": ["swim", "kick", "pull", "drill", "scull", "mixed"]
+    },
+    "equipment": {
+      "enum": ["fins", "paddles", "buoy", "snorkel", "board"]
+    },
+    "effortLevel": {
+      "enum": ["easy", "smooth", "moderate", "strong", "fast", "sprint", "max", "race"]
+    },
+    "workout": {
+      "type": "object",
+      "required": ["course", "categories", "tags", "groups", "sections"],
+      "properties": {
+        "title": { "type": "string" },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "author": { "type": "string" },
+        "team": { "type": "string" },
+        "location": { "$ref": "#/$defs/location" },
+        "course": {
+          "type": "object",
+          "required": ["length", "unit"],
+          "properties": {
+            "length": { "type": "integer", "minimum": 1 },
+            "unit": { "enum": ["yd", "m"] }
+          }
+        },
+        "categories": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Open list; recommended values: sprint, distance, im, stroke, kick, basic, triathlon, openwater, lowvolume, test"
+        },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "groups": {
+          "type": "array",
+          "description": "Speed groups ordered fastest to slowest",
+          "items": { "$ref": "#/$defs/speedGroup" }
+        },
+        "sections": { "type": "array", "items": { "$ref": "#/$defs/section" } },
+        "notes": { "type": "string" },
+        "source": { "$ref": "#/$defs/source" },
+        "statedTotal": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "speedGroup": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "basePace100": { "$ref": "#/$defs/time" },
+        "note": { "type": "string" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["manual", "ocr", "generated", "ai", "imported"] },
+        "attribution": { "type": "string" },
+        "imageRef": { "type": "string" }
+      }
+    },
+    "location": {
+      "type": "object",
+      "description": "Where the workout took place. Coordinates and address are optional.",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "latitude": { "type": "number", "minimum": -90, "maximum": 90 },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "address": { "type": "string" }
+      }
+    },
+    "section": {
+      "type": "object",
+      "required": ["name", "items"],
+      "properties": {
+        "name": { "type": "string" },
+        "note": { "type": "string" },
+        "statedDistance": { "type": "integer", "minimum": 0 },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } }
+      }
+    },
+    "item": {
+      "oneOf": [
+        { "$ref": "#/$defs/set" },
+        { "$ref": "#/$defs/repeat" },
+        { "$ref": "#/$defs/rest" },
+        { "$ref": "#/$defs/noteItem" }
+      ]
+    },
+    "set": {
+      "type": "object",
+      "required": ["type", "reps", "distance"],
+      "properties": {
+        "type": { "const": "set" },
+        "reps": { "type": "integer", "minimum": 1 },
+        "distance": { "type": "integer", "minimum": 1, "description": "Distance per rep, in course units" },
+        "stroke": { "$ref": "#/$defs/stroke" },
+        "activity": { "$ref": "#/$defs/activity" },
+        "drillName": { "type": "string" },
+        "equipment": { "type": "array", "items": { "$ref": "#/$defs/equipment" } },
+        "effort": { "$ref": "#/$defs/effort" },
+        "breath": { "$ref": "#/$defs/breath" },
+        "interval": { "$ref": "#/$defs/interval" },
+        "segments": { "type": "array", "items": { "$ref": "#/$defs/segment" } },
+        "perRep": { "type": "array", "items": { "$ref": "#/$defs/perRep" } },
+        "perGroup": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/groupOverride" }
+        },
+        "groupFilter": { "type": "array", "items": { "type": "string" } },
+        "label": { "type": "string" },
+        "note": { "type": "string" },
+        "sourceText": { "type": "string" }
+      }
+    },
+    "segment": {
+      "type": "object",
+      "required": ["distance"],
+      "properties": {
+        "distance": { "type": "integer", "minimum": 1 },
+        "stroke": { "$ref": "#/$defs/stroke" },
+        "activity": { "$ref": "#/$defs/activity" },
+        "effortLevel": { "$ref": "#/$defs/effortLevel" },
+        "note": { "type": "string" }
+      }
+    },
+    "effort": {
+      "type": "object",
+      "properties": {
+        "shape": {
+          "enum": ["steady", "build", "descend", "ascend", "negative-split", "variable-sprint"]
+        },
+        "level": { "$ref": "#/$defs/effortLevel" },
+        "percent": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "percentMax": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "detail": { "type": "string" }
+      }
+    },
+    "breath": {
+      "type": "object",
+      "properties": {
+        "pattern": { "type": "string" },
+        "every": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "interval": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": { "enum": ["sendoff", "rest", "open"] },
+        "sendoffs": {
+          "type": "object",
+          "description": "Group id → send-off. Sparse maps resolve to the nearest faster listed group, then slower.",
+          "additionalProperties": { "$ref": "#/$defs/time" }
+        },
+        "rest": { "$ref": "#/$defs/time" },
+        "targetRest": { "$ref": "#/$defs/time" },
+        "maxRest": { "$ref": "#/$defs/time" },
+        "openEnded": { "type": "boolean" },
+        "note": { "type": "string" }
+      }
+    },
+    "perRep": {
+      "type": "object",
+      "required": ["selector"],
+      "properties": {
+        "selector": {
+          "type": "string",
+          "pattern": "^(odd|even|\\d+(-\\d+)?)$"
+        },
+        "stroke": { "$ref": "#/$defs/stroke" },
+        "activity": { "$ref": "#/$defs/activity" },
+        "effortLevel": { "$ref": "#/$defs/effortLevel" },
+        "note": { "type": "string" }
+      }
+    },
+    "groupOverride": {
+      "type": "object",
+      "properties": {
+        "reps": { "type": "integer", "minimum": 1 },
+        "distance": { "type": "integer", "minimum": 1 },
+        "sendoff": { "$ref": "#/$defs/time" }
+      }
+    },
+    "repeat": {
+      "type": "object",
+      "required": ["type", "rounds", "items"],
+      "properties": {
+        "type": { "const": "repeat" },
+        "rounds": { "type": "integer", "minimum": 1 },
+        "roundsPerGroup": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+        "perRound": { "type": "array", "items": { "$ref": "#/$defs/perRound" } },
+        "note": { "type": "string" },
+        "sourceText": { "type": "string" }
+      }
+    },
+    "perRound": {
+      "type": "object",
+      "required": ["selector"],
+      "properties": {
+        "selector": { "type": "string", "pattern": "^(odd|even|\\d+(-\\d+)?)$" },
+        "stroke": { "$ref": "#/$defs/stroke" },
+        "note": { "type": "string" }
+      }
+    },
+    "rest": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "rest" },
+        "duration": { "$ref": "#/$defs/time" },
+        "note": { "type": "string" }
+      }
+    },
+    "noteItem": {
+      "type": "object",
+      "required": ["type", "text"],
+      "properties": {
+        "type": { "const": "note" },
+        "text": { "type": "string" }
+      }
+    }
+  }
+}

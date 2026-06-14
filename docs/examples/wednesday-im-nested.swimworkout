@@ -1,0 +1,286 @@
+{
+  "format" : "open-swim-workout",
+  "version" : "0.2",
+  "workout" : {
+    "categories" : [
+      "im",
+      "sprint"
+    ],
+    "course" : {
+      "length" : 25,
+      "unit" : "yd"
+    },
+    "groups" : [
+      {
+        "id" : "A"
+      },
+      {
+        "id" : "B"
+      },
+      {
+        "id" : "C"
+      },
+      {
+        "id" : "D"
+      }
+    ],
+    "sections" : [
+      {
+        "items" : [
+          {
+            "distance" : 300,
+            "note" : "every 3rd length something different",
+            "reps" : 1,
+            "sourceText" : "300 free | every 3rd length something different",
+            "stroke" : "free",
+            "type" : "set"
+          },
+          {
+            "activity" : "pull",
+            "breath" : {
+              "pattern" : "3/4/4/5"
+            },
+            "distance" : 200,
+            "reps" : 1,
+            "sourceText" : "200 pull bp 3/4/4/5",
+            "type" : "set"
+          },
+          {
+            "activity" : "kick",
+            "distance" : 50,
+            "reps" : 4,
+            "sourceText" : "4x50 kick imo",
+            "stroke" : "imo",
+            "type" : "set"
+          },
+          {
+            "activity" : "drill",
+            "distance" : 25,
+            "reps" : 4,
+            "sourceText" : "4x25 drill choice",
+            "stroke" : "choice",
+            "type" : "set"
+          }
+        ],
+        "name" : "Warmup",
+        "statedDistance" : 800
+      },
+      {
+        "items" : [
+          {
+            "items" : [
+              {
+                "distance" : 75,
+                "interval" : {
+                  "mode" : "rest",
+                  "rest" : ":20"
+                },
+                "reps" : 4,
+                "segments" : [
+                  {
+                    "activity" : "kick",
+                    "distance" : 25
+                  },
+                  {
+                    "activity" : "drill",
+                    "distance" : 25
+                  },
+                  {
+                    "activity" : "swim",
+                    "distance" : 25
+                  }
+                ],
+                "sourceText" : "4x75 imo as kick/drill/swim r:20",
+                "stroke" : "imo",
+                "type" : "set"
+              },
+              {
+                "distance" : 100,
+                "effort" : {
+                  "level" : "sprint"
+                },
+                "interval" : {
+                  "mode" : "sendoff",
+                  "sendoffs" : {
+                    "A" : "1:30",
+                    "B" : "1:45",
+                    "C" : "2:00"
+                  },
+                  "targetRest" : ":15"
+                },
+                "reps" : 1,
+                "sourceText" : "100 free sprint @1:30/1:45/2:00 (~:15 rest)",
+                "stroke" : "free",
+                "type" : "set"
+              },
+              {
+                "distance" : 100,
+                "effort" : {
+                  "level" : "sprint"
+                },
+                "interval" : {
+                  "mode" : "sendoff",
+                  "sendoffs" : {
+                    "A" : "1:30",
+                    "B" : "1:45",
+                    "C" : "2:00",
+                    "D" : "2:20"
+                  },
+                  "targetRest" : ":10"
+                },
+                "reps" : 1,
+                "sourceText" : "100 im sprint @1:30/1:45/2:00/2:20 (~:10 rest)",
+                "stroke" : "im",
+                "type" : "set"
+              },
+              {
+                "distance" : 100,
+                "effort" : {
+                  "level" : "easy"
+                },
+                "interval" : {
+                  "mode" : "rest",
+                  "rest" : "1:00"
+                },
+                "reps" : 1,
+                "sourceText" : "100 choice easy r1:00",
+                "stroke" : "choice",
+                "type" : "set"
+              },
+              {
+                "distance" : 75,
+                "effort" : {
+                  "level" : "sprint"
+                },
+                "interval" : {
+                  "mode" : "sendoff",
+                  "sendoffs" : {
+                    "A" : "1:10",
+                    "B" : "1:20",
+                    "C" : "1:30"
+                  },
+                  "targetRest" : ":10"
+                },
+                "reps" : 1,
+                "segments" : [
+                  {
+                    "distance" : 25,
+                    "stroke" : "fly"
+                  },
+                  {
+                    "distance" : 25,
+                    "stroke" : "back"
+                  },
+                  {
+                    "distance" : 25,
+                    "stroke" : "breast"
+                  }
+                ],
+                "sourceText" : "75 (25 fly/25 back/25 breast) sprint @1:10/1:20/1:30 (~:10 rest)",
+                "type" : "set"
+              },
+              {
+                "distance" : 100,
+                "effort" : {
+                  "level" : "easy"
+                },
+                "interval" : {
+                  "mode" : "rest",
+                  "rest" : ":30"
+                },
+                "reps" : 1,
+                "sourceText" : "100 choice easy r:30",
+                "stroke" : "choice",
+                "type" : "set"
+              },
+              {
+                "distance" : 75,
+                "effort" : {
+                  "level" : "sprint"
+                },
+                "interval" : {
+                  "mode" : "sendoff",
+                  "sendoffs" : {
+                    "A" : "1:10",
+                    "B" : "1:20",
+                    "C" : "1:30",
+                    "D" : "1:40"
+                  },
+                  "targetRest" : ":20"
+                },
+                "reps" : 1,
+                "segments" : [
+                  {
+                    "distance" : 25,
+                    "stroke" : "fly"
+                  },
+                  {
+                    "distance" : 25,
+                    "stroke" : "back"
+                  },
+                  {
+                    "distance" : 25,
+                    "stroke" : "breast"
+                  }
+                ],
+                "sourceText" : "75 (25 fly/25 back/25 breast) sprint @1:10/1:20/1:30/1:40 (~:20 rest)",
+                "type" : "set"
+              },
+              {
+                "distance" : 100,
+                "effort" : {
+                  "level" : "sprint"
+                },
+                "note" : "then go right into the 50 choice easy",
+                "reps" : 1,
+                "sourceText" : "100 im sprint | then go right into the 50 choice easy",
+                "stroke" : "im",
+                "type" : "set"
+              },
+              {
+                "distance" : 50,
+                "effort" : {
+                  "level" : "easy"
+                },
+                "interval" : {
+                  "mode" : "rest",
+                  "rest" : "1:00"
+                },
+                "reps" : 1,
+                "sourceText" : "50 choice easy r1:00",
+                "stroke" : "choice",
+                "type" : "set"
+              }
+            ],
+            "rounds" : 2,
+            "sourceText" : "2x {",
+            "type" : "repeat"
+          }
+        ],
+        "name" : "Main Set",
+        "statedDistance" : 2000
+      },
+      {
+        "items" : [
+          {
+            "distance" : 200,
+            "effort" : {
+              "level" : "easy"
+            },
+            "reps" : 1,
+            "sourceText" : "200 choice easy",
+            "stroke" : "choice",
+            "type" : "set"
+          }
+        ],
+        "name" : "Cool Down",
+        "statedDistance" : 200
+      }
+    ],
+    "statedTotal" : 3000,
+    "tags" : [
+
+    ],
+    "title" : "Wednesday"
+  }
+}

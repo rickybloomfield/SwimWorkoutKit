@@ -1,0 +1,20 @@
+# Rainy Day
+course: scy
+author: Coach
+team: Example Team
+categories: stroke
+
+== Warmup
+400 swim
+200 kick
+300 pull
+100 drill choice
+== Main Set
+2x { | round 1 = fly and breast, round 2 = back and free
+  round 2: back and free
+  4x50 fly kick @1:00 | kick-drill
+  4x50 breast kick @1:00 | kick-drill
+  4x25 fly sprint
+  4x25 breast sprint
+  100 im
+}

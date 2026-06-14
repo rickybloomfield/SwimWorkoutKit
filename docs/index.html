@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Swim Workout format &amp; SwimText</title>
+<meta name="description" content="Open Swim Workout (OSW) is an open, JSON-based format for prescribed swimming workouts — per-lane send-offs, nested repeats, stroke/activity/effort descriptors — with SwimText, a human notation that round-trips to the same model.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f9fc">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a1521">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a4a73'/%3E%3Cpath d='M10 40c6-9 12-9 18 0s12 9 18 0' stroke='%237dd3fc' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M14 26c5-7 10-7 15 0s10 7 15 0' stroke='%23bae6fd' stroke-width='4' fill='none' stroke-linecap='round' opacity='.7'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script src="site.js" defer></script>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="index.html">
+      <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true">
+        <rect width="64" height="64" rx="14" fill="#0a4a73"/>
+        <path d="M10 40c6-9 12-9 18 0s12 9 18 0" stroke="#7dd3fc" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M14 26c5-7 10-7 15 0s10 7 15 0" stroke="#bae6fd" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
+      </svg>
+      Open <span class="pro">Swim Workout</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" aria-current="page">The format</a>
+      <a href="https://github.com/rickybloomfield/SwimWorkoutKit" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero compact">
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <span class="hero-eyebrow">Open spec · v0.1 draft</span>
+      <h1>The Open Swim Workout format <span class="thin">&amp; SwimText</span></h1>
+      <p class="lede">An open, JSON-based interchange format for <strong>prescribed</strong> swimming workouts — the workout a coach writes, not the activity a watch records. Built around what actually lands on whiteboards: sections with totals, nested repeats, stroke / activity / effort descriptors, and <strong>per-lane send-offs</strong>, which no existing format expresses.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#downloads">Download schema &amp; examples</a>
+        <a class="btn btn-ghost" href="#example">See it in both syntaxes</a>
+      </div>
+      <p class="hero-meta"><span class="mono">.swimworkout</span> · JSON (UTF-8) · <span class="mono">application/vnd.openswimworkout+json</span> · JSON Schema 2020-12 · MIT licensed</p>
+    </div>
+  </div>
+  <svg class="hero-wave" viewBox="0 0 1440 44" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,22 C240,44 480,0 720,14 C960,28 1200,40 1440,12 L1440,44 L0,44 Z"></path>
+  </svg>
+</header>
+
+<main>
+
+<!-- ======================== Principles ======================== -->
+<section class="section" id="principles">
+  <div class="container">
+    <span class="kicker">Design principles</span>
+    <h2>Faithful to the whiteboard</h2>
+
+    <div class="principles">
+      <div class="principle">
+        <h3>Faithful</h3>
+        <p>Represent real coach notation — per-lane intervals <code>@1:30/1:40/1:50</code>, brace repeats, footnotes — not an idealized model.</p>
+      </div>
+      <div class="principle">
+        <h3>Layered semantics</h3>
+        <p>Structure everything that has meaning, and keep verbatim free text (<code>note</code>, <code>sourceText</code>) at every level — nothing is ever lost to parsing.</p>
+      </div>
+      <div class="principle">
+        <h3>Computable</h3>
+        <p>Per-group distances and duration estimates derive mechanically; stated totals act as checksums — useful for validating OCR imports.</p>
+      </div>
+      <div class="principle">
+        <h3>Open</h3>
+        <p>Versioned spec, published JSON Schema, MIT-licensed reference implementation (<code>SwimWorkoutKit</code>, Swift).</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Two syntaxes, one model.</strong> The canonical encoding is JSON (<span class="mono">.swimworkout</span>). Its human companion, <strong>SwimText</strong>, reads like coach shorthand and round-trips losslessly for the canonical subset — for quick entry, iMessage sharing, and LLM input/output.
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Example, both syntaxes ======================== -->
+<section class="section" id="example">
+  <div class="container">
+    <span class="kicker">The same workout, twice</span>
+    <h2>SwimText ⇄ JSON</h2>
+    <p class="sub">A real example from the spec repository: <span class="mono">friday-sprint</span>, a 3,200-yard short-course sprint workout for three speed groups. The JSON below is abridged to the interesting parts — the full file is <a href="examples/friday-sprint.swimworkout" download>downloadable</a>.</p>
+
+    <div class="tabs" data-tabs>
+      <div class="tablist" role="tablist" aria-label="Example syntax">
+        <button class="tab" role="tab" id="tab-swimtext" aria-controls="panel-swimtext" aria-selected="true" type="button">SwimText</button>
+        <button class="tab" role="tab" id="tab-json" aria-controls="panel-json" aria-selected="false" type="button">JSON (.swimworkout)</button>
+      </div>
+
+      <div class="tabpanel" id="panel-swimtext" role="tabpanel" aria-labelledby="tab-swimtext">
+        <div class="codeblock">
+          <div class="codeblock-bar"><span class="dotrow" aria-hidden="true"><i></i><i></i><i></i></span> friday-sprint.swimtext <button class="copy-btn" type="button">Copy</button></div>
+          <pre><code># Friday — Sprint
+course: scy
+categories: sprint
+total: 3200
+
+<span class="sec">== Warmup: 300</span>
+3x100 as swim/kick/pull
+<span class="sec">== Main Set: 2800</span>
+3x300 free descend to 80% <span class="tm">@4:40/4:50/5:00</span> (ideally :40 rest)
+100 kick easy r1:00
+4x200 free descend to 90% <span class="tm">@3:10/3:20/3:30</span> (ideally :30 rest)
+100 kick easy r1:00
+5x100 choice descend to 95% <span class="tm">@1:30/1:40/1:50</span> (ideally :20 rest)
+100 kick easy r1:00
+6x50 choice descend to 100% <span class="tm">@1:00/1:10</span> (ideally :15 rest)
+<span class="sec">== Cool Down: 100</span>
+100 choice easy</code></pre>
+        </div>
+      </div>
+
+      <div class="tabpanel" id="panel-json" role="tabpanel" aria-labelledby="tab-json">
+        <div class="codeblock">
+          <div class="codeblock-bar"><span class="dotrow" aria-hidden="true"><i></i><i></i><i></i></span> friday-sprint.swimworkout (abridged) <button class="copy-btn" type="button">Copy</button></div>
+          <pre><code>{
+  <span class="hl">"format"</span>: "open-swim-workout",
+  <span class="hl">"version"</span>: "0.1",
+  <span class="hl">"workout"</span>: {
+    "title": "Friday — Sprint",
+    "course": { "length": 25, "unit": "yd" },
+    "categories": ["sprint"],
+    <span class="hl">"groups"</span>: [ { "id": "A" }, { "id": "B" }, { "id": "C" } ],
+    <span class="hl">"sections"</span>: [
+      { "name": "Warmup", "statedDistance": 300, "items": [ <span class="cm">…</span> ] },
+      { "name": "Main Set", "statedDistance": 2800, "items": [
+        <span class="cm">… the 3×300 and 4×200 sets, easy kick 100s …</span>
+        {
+          "type": "set",
+          "reps": 5,
+          "distance": 100,
+          "stroke": "choice",
+          "effort": { "shape": "descend", "percent": 95 },
+          <span class="hl">"interval"</span>: {
+            "mode": "sendoff",
+            <span class="hl">"sendoffs"</span>: { "A": <span class="tm">"1:30"</span>, "B": <span class="tm">"1:40"</span>, "C": <span class="tm">"1:50"</span> },
+            "targetRest": <span class="tm">":20"</span>
+          },
+          "sourceText": "5x100 choice descend to 95% @1:30/1:40/1:50 (ideally :20 rest)"
+        },
+        <span class="cm">… the 6×50 set …</span>
+      ] },
+      { "name": "Cool Down", "statedDistance": 100, "items": [ <span class="cm">…</span> ] }
+    ],
+    "statedTotal": 3200
+  }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 2.4rem; font-size: 1.15rem;">Repeat blocks</h3>
+    <p class="sub">Brace repeats nest, carry per-round variations, and can even run a different number of rounds per group. From the <span class="mono">wednesday-im-nested</span> example:</p>
+
+    <div class="pair">
+      <div class="codeblock">
+        <div class="codeblock-bar"><span class="dotrow" aria-hidden="true"><i></i><i></i><i></i></span> SwimText <button class="copy-btn" type="button">Copy</button></div>
+        <pre><code><span class="sec">== Main Set: 2000</span>
+2x {
+  4x75 imo as kick/drill/swim r:20
+  100 free sprint <span class="tm">@1:30/1:45/2:00</span> (~:15 rest)
+  100 im sprint <span class="tm">@1:30/1:45/2:00/2:20</span> (~:10 rest)
+  100 choice easy r1:00
+  75 (25 fly/25 back/25 breast) sprint <span class="tm">@1:10/1:20/1:30</span> (~:10 rest)
+  <span class="cm">…</span>
+}</code></pre>
+      </div>
+      <div class="codeblock">
+        <div class="codeblock-bar"><span class="dotrow" aria-hidden="true"><i></i><i></i><i></i></span> JSON (abridged) <button class="copy-btn" type="button">Copy</button></div>
+        <pre><code>{
+  <span class="hl">"type"</span>: "repeat",
+  <span class="hl">"rounds"</span>: 2,
+  "items": [
+    {
+      "type": "set",
+      "reps": 4, "distance": 75, "stroke": "imo",
+      <span class="hl">"segments"</span>: [
+        { "distance": 25, "activity": "kick" },
+        { "distance": 25, "activity": "drill" },
+        { "distance": 25, "activity": "swim" }
+      ],
+      "interval": { "mode": "rest", "rest": <span class="tm">":20"</span> }
+    },
+    {
+      "type": "set",
+      "reps": 1, "distance": 100, "stroke": "free",
+      "effort": { "level": "sprint" },
+      "interval": {
+        "mode": "sendoff",
+        <span class="hl">"sendoffs"</span>: { "A": <span class="tm">"1:30"</span>, "B": <span class="tm">"1:45"</span>, "C": <span class="tm">"2:00"</span> },
+        "targetRest": <span class="tm">":15"</span>
+      }
+    },
+    <span class="cm">…</span>
+  ]
+}</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Speed groups ======================== -->
+<section class="section" id="groups">
+  <div class="container">
+    <span class="kicker">The defining feature</span>
+    <h2>Speed groups: one workout, many speeds</h2>
+    <p class="sub">A <strong>speed group</strong> is a lane or pace cohort, declared once per workout and <strong>ordered fastest → slowest</strong>. Sets carry a send-off map from group id to time — exactly what coaches write as <span class="mono">@1:30/1:45/2:00</span>. Groups can also override reps or distance per set, and items can be filtered to specific groups.</p>
+
+    <p class="sub" style="margin-top: 1.2rem;"><strong>Sparse maps are legal — and resolved deterministically.</strong> A group with no entry resolves to the nearest <em>faster</em> (earlier-listed) specified group, then to the nearest slower one. That encodes the everyday reality of a coach listing three times in a four-lane workout. In <span class="mono">wednesday-im-nested</span>, the line <span class="mono">100 free sprint @1:30/1:45/2:00</span> appears in a workout with four groups:</p>
+
+    <div class="lane-demo">
+      <div class="lane-pill">
+        <span class="gid">A</span>
+        <span class="gtime">@1:30</span>
+        <span class="gnote">listed</span>
+      </div>
+      <div class="lane-pill">
+        <span class="gid">B</span>
+        <span class="gtime">@1:45</span>
+        <span class="gnote">listed</span>
+      </div>
+      <div class="lane-pill">
+        <span class="gid">C</span>
+        <span class="gtime">@2:00</span>
+        <span class="gnote">listed</span>
+      </div>
+      <div class="lane-pill inherit">
+        <span class="gid">D</span>
+        <span class="gtime">@2:00</span>
+        <span class="gnote">inherits from C, the nearest faster listed group</span>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Reconciliation rule:</strong> distance and duration are computed <em>per group</em>, and a stated total “matches” when <strong>any</strong> group’s computed distance equals it — printed totals usually describe one cohort. Repeat blocks resolve <code>roundsPerGroup</code> sparsely the same way.
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Enums ======================== -->
+<section class="section" id="enums">
+  <div class="container">
+    <span class="kicker">Vocabulary</span>
+    <h2>Strokes, activities, effort</h2>
+    <p class="sub">Stroke and activity are <strong>orthogonal axes</strong>: “fly drill” is simply <code>stroke: fly</code> + <code>activity: drill</code> — a combination most formats cannot express.</p>
+
+    <div class="enum-grid">
+      <div class="enum-card">
+        <h3><code>stroke</code></h3>
+        <ul class="enum-list">
+          <li><code class="ch free">free</code> <span class="what">freestyle</span></li>
+          <li><code class="ch back">back</code> <span class="what">backstroke</span></li>
+          <li><code class="ch breast">breast</code> <span class="what">breaststroke</span></li>
+          <li><code class="ch fly">fly</code> <span class="what">butterfly</span></li>
+          <li><code class="ch im">im</code> <span class="what">individual medley</span></li>
+          <li><code class="ch im">imo</code> <span class="what">IM order, rotating across reps/rounds</span></li>
+          <li><code class="ch im">rimo</code> <span class="what">reverse IM order</span></li>
+          <li><code class="ch plain">stroke</code> <span class="what">the swimmer’s specialty stroke</span></li>
+          <li><code class="ch plain">choice</code> <span class="what">swimmer’s choice</span></li>
+          <li><code class="ch plain">mixed</code> <span class="what">varies — see <code>segments</code> / <code>perRep</code></span></li>
+        </ul>
+      </div>
+
+      <div class="enum-card">
+        <h3><code>activity</code></h3>
+        <ul class="enum-list">
+          <li><code class="ch plain">swim</code> <span class="what">full-stroke swimming (default)</span></li>
+          <li><code class="ch kick">kick</code> <span class="what">kicking, with or without a board</span></li>
+          <li><code class="ch pull">pull</code> <span class="what">pulling — pairs with buoy/paddles</span></li>
+          <li><code class="ch drill">drill</code> <span class="what">technique drill; name in <code>drillName</code></span></li>
+          <li><code class="ch drill">scull</code> <span class="what">sculling</span></li>
+          <li><code class="ch plain">mixed</code> <span class="what">varies within the set</span></li>
+        </ul>
+        <p style="font-size:.82rem; color: var(--muted); margin: .8rem 0 0;">Equipment rides alongside: <code>fins</code>, <code>paddles</code>, <code>buoy</code>, <code>snorkel</code>, <code>board</code>.</p>
+      </div>
+
+      <div class="enum-card">
+        <h3><code>effort</code></h3>
+        <ul class="enum-list">
+          <li><code class="ch plain">level</code> <span class="what"><code>easy · smooth · moderate · strong · fast · sprint · <span style="color: var(--c-max); font-weight:700;">max</span> · race</code></span></li>
+          <li><code class="ch plain">shape</code> <span class="what"><code>steady · build · descend · ascend · negative-split · variable-sprint</code></span></li>
+          <li><code class="ch plain">percent</code> <span class="what">“% effort,” optionally a range via <code>percentMax</code>; with <code>descend</code>, the target — “descend to 90%”</span></li>
+          <li><code class="ch plain">detail</code> <span class="what">free-form shape detail: <code>"1-4"</code>, <code>"by 25"</code>, <code>"by round"</code></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="spec">
+        <caption class="visually-hidden" style="display:none;">Interval modes</caption>
+        <thead>
+          <tr><th scope="col">Interval mode</th><th scope="col">Meaning</th><th scope="col">Extras</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>sendoff</code></td>
+            <td>Leave on a clock time; <code>sendoffs</code> maps group id → time</td>
+            <td><code>targetRest</code> (“ideally :15 rest”), <code>maxRest</code>, <code>openEnded</code> (“@1:25+” — slowest listed send-off is a floor)</td>
+          </tr>
+          <tr>
+            <td><code>rest</code></td>
+            <td>Fixed rest between reps, in <code>rest</code></td>
+            <td>SwimText: <code>r:20</code>, <code>r1:00</code>, <code>r20s</code>, <code>r1m</code></td>
+          </tr>
+          <tr>
+            <td><code>open</code></td>
+            <td>No clock</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="sub" style="margin-top: 1.2rem;">All times are strings — <span class="mono">"1:30"</span>, <span class="mono">":35"</span>, or bare seconds <span class="mono">"35"</span> — emitted canonically as <span class="mono">m:ss</span>, with <span class="mono">:ss</span> for sub-minute values. Validators flag non-positive reps, segment sums that don’t match the rep distance, undefined group ids, totals matching no group, distances not divisible by the course length, and send-offs implausibly shorter than the estimated swim time.</p>
+  </div>
+</section>
+
+<!-- ======================== Downloads ======================== -->
+<section class="section" id="downloads">
+  <div class="container">
+    <span class="kicker">Get the spec</span>
+    <h2>Schema &amp; examples</h2>
+    <p class="sub">Everything is versioned with the spec (semantic versioning: readers MUST reject unknown major versions, SHOULD accept unknown minors, and ignore unknown fields — ideally preserving them on rewrite).</p>
+
+    <div class="dl-grid">
+      <a class="dl" href="schema/open-swim-workout.schema.json" download>
+        <span class="fname">open-swim-workout.schema.json</span>
+        <span class="fdesc">JSON Schema (2020-12) for OSW v0.1 — validate any <span class="mono">.swimworkout</span> file.</span>
+      </a>
+      <a class="dl" href="examples/friday-sprint.swimworkout" download>
+        <span class="fname">friday-sprint.swimworkout</span>
+        <span class="fdesc">3,200 SCY sprint workout, three speed groups, descending send-off ladders.</span>
+      </a>
+      <a class="dl" href="examples/wednesday-im-nested.swimworkout" download>
+        <span class="fname">wednesday-im-nested.swimworkout</span>
+        <span class="fdesc">3,000 SCY IM workout: nested repeat block, segments, four groups with sparse send-offs.</span>
+      </a>
+      <a class="dl" href="examples/friday-sprint.swimtext" download>
+        <span class="fname">friday-sprint.swimtext</span>
+        <span class="fdesc">The same Friday sprint workout in SwimText notation — they round-trip.</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Reference implementation ======================== -->
+<section class="section" id="reference">
+  <div class="container">
+    <span class="kicker">Reference implementation</span>
+    <h2>SwimWorkoutKit</h2>
+
+    <div class="split">
+      <div>
+        <p class="sub">A UI-free Swift package: the OSW model with <span class="mono">Codable</span>, the SwimText parser, printer, and lexer, per-group totals and duration calculators, and the validator — unit-tested against a corpus of representative swim workouts covering the format's features. An optional <span class="mono">SwimWorkoutKitUI</span> module adds SwimText syntax highlighting (see below).</p>
+        <ul class="points">
+          <li><strong><span class="mono">swimtext to-json</span></strong> — parse SwimText into a <span class="mono">.swimworkout</span> document.</li>
+          <li><strong><span class="mono">swimtext to-text</span></strong> — print a document back as SwimText.</li>
+          <li><strong><span class="mono">swimtext check</span></strong> — validate and report per-group distance and estimated duration.</li>
+        </ul>
+        <p class="sub" style="font-size:.9rem;">Parsing never rejects input: unrecognized fragments land in <code>note</code>, whole unparsed lines become note items — and the caller is told.</p>
+      </div>
+      <div class="codeblock">
+        <div class="codeblock-bar"><span class="dotrow" aria-hidden="true"><i></i><i></i><i></i></span> terminal <button class="copy-btn" type="button">Copy</button></div>
+        <pre><code>$ swimtext check friday-sprint.swimtext
+group A: 3200 yd, <span class="tm">~40:10</span> (partial)
+group B: 3200 yd, <span class="tm">~43:10</span> (partial)
+group C: 3200 yd, <span class="tm">~45:10</span> (partial)</code></pre>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Interop:</strong> OSW is the source of truth; exports are intentionally lossy. <strong>Garmin FIT</strong>: one chosen group, descriptors become step notes, send-off → <code>repetition_time</code>. <strong>Apple WorkoutKit</strong> (watchOS 11+): one group, send-offs → <code>poolSwimDistanceWithTime</code> goals, stroke/activity → step display names. <strong>SwimText</strong> round-trips losslessly for the canonical subset.
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Syntax highlighting ======================== -->
+<section class="section" id="highlighting">
+  <div class="container">
+    <span class="kicker">Editor &amp; display</span>
+    <h2>SwimText syntax highlighting, built in</h2>
+    <p class="sub">The optional <span class="mono">SwimWorkoutKitUI</span> module colors SwimText with the same visual vocabulary as the app and its deck sheets — strokes, activities, effort, send-offs, sections, and notes — so a typed or pasted workout reads at a glance. It's color-blind-safe and pairs color with weight, staying legible in black &amp; white.</p>
+
+    <div class="split">
+      <div>
+        <ul class="points">
+          <li><strong><span class="mono">SwimTextView</span></strong> — a <span class="mono">UITextView</span> / <span class="mono">NSTextView</span> <strong>subclass</strong> that highlights live as the text changes. Set its text and it colors itself; type into it and it re-highlights on every keystroke.</li>
+          <li><strong><span class="mono">SwimTextEditor</span></strong> — a SwiftUI wrapper around <span class="mono">SwimTextView</span>: a drop-in, highlighting replacement for <span class="mono">TextEditor</span>.</li>
+          <li><strong><span class="mono">SwimTextLabel</span></strong> — a read-only SwiftUI view (renders into <span class="mono">Text</span>), so it works everywhere, including watchOS.</li>
+          <li><strong><span class="mono">SwimTextHighlighter</span></strong> — the engine: SwimText → <span class="mono">AttributedString</span> or <span class="mono">NSAttributedString</span>. Built on the UI-free <span class="mono">SwimTextLexer</span> in the core library.</li>
+          <li><strong><span class="mono">SwimTextTheme</span></strong> — the palette. <span class="mono">.standard</span> matches the app; pass your own to any view to retheme.</li>
+        </ul>
+        <div class="codeblock">
+          <div class="codeblock-bar"><span class="dotrow" aria-hidden="true"><i></i><i></i><i></i></span> SwiftUI <button class="copy-btn" type="button">Copy</button></div>
+          <pre><code>import SwiftUI
+import SwimWorkoutKitUI
+
+struct WorkoutEntry: View {
+  @State private var text = <span class="tm">"8x50 free fast @:45 r:10"</span>
+  var body: some View {
+    <span class="hl">SwimTextEditor</span>(text: $text)   <span class="cm">// live highlighting</span>
+  }
+}</code></pre>
+        </div>
+      </div>
+      <div class="codeblock">
+        <div class="codeblock-bar"><span class="dotrow" aria-hidden="true"><i></i><i></i><i></i></span> SwimTextView · rendered</div>
+        <pre><code><span style="font-weight:700;"># Friday — Sprint</span>
+<span style="color: var(--muted);">course: scy</span>
+<span style="color: var(--c-warm); font-weight:600;">== Warmup: 300</span>
+<span style="font-weight:700;">3x100</span> as <span style="color: var(--c-free);">swim</span>/<span style="color: var(--c-kick);">kick</span>/<span style="color: var(--c-pull);">pull</span>
+<span style="color: var(--c-main); font-weight:600;">== Main Set: 2800</span>
+<span style="font-weight:700;">3x300</span> <span style="color: var(--c-free);">free</span> <span style="color: var(--muted);">descend to 80%</span> <span style="color: var(--c-main); font-weight:600;">@4:40/4:50/5:00</span>
+<span style="color: var(--c-main); font-weight:600;">2x {</span>
+  <span style="font-weight:700;">6x25</span> <span style="color: var(--c-fly);">fly</span> <span style="color: var(--c-max);">sprint</span> <span style="color: var(--c-main); font-weight:600;">@:35</span>
+  <span style="font-weight:700;">100</span> <span style="color: var(--c-back);">back</span> <span style="color: var(--c-breast);">smooth</span> <span style="color: var(--muted);">r:20 | long axis</span>
+<span style="color: var(--c-main); font-weight:600;">}</span>
+<span style="color: var(--muted);">&gt; remember your fins</span></code></pre>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>One vocabulary, everywhere.</strong> The colors here are the same <span class="mono">SwimTextTheme</span> tokens the app draws on screen and prints to deck sheets — strokes by color, send-offs in high-contrast blue, sections by name, effort by intensity, notes dimmed.
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <span>Open Swim Workout format v0.2 · spec MIT licensed</span>
+    <span><a href="index.html">Format spec</a><span class="sep">·</span><a href="https://github.com/rickybloomfield/SwimWorkoutKit" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

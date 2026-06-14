@@ -1,0 +1,15 @@
+# Choice Rounds
+course: scy
+author: Coach
+team: Example Team
+
+== Main Set
+2x { | odd rounds = favorite stroke, even rounds = not favorite stroke
+  800 choice
+  25 scull
+  75 drill choice
+  6x25 choice sprint
+  4x50 choice vs
+  200 swim 75%
+  rest 1:00
+}
