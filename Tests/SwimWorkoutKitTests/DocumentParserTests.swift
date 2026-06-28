@@ -138,11 +138,42 @@ struct DocumentParserTests {
         #expect(WorkoutCalculator.distance(of: filled) == 600)
     }
 
+    @Test("A coach description parses to metadata and round-trips")
+    func descriptionParsesAndRoundTrips() throws {
+        let text = """
+        # Threshold Tuesday
+        description: Aerobic threshold — hold pace across the main set.
+        course: scy
+
+        == Main Set
+        4x200 free @3:00
+        """
+        let parsed = SwimTextParser.parse(text)
+        let workout = parsed.document.workout
+        #expect(workout.description == "Aerobic threshold — hold pace across the main set.")
+        // It's metadata, not a swim or a stray note.
+        #expect(parsed.unparsedLines.isEmpty)
+        #expect(workout.sections.count == 1)
+        // The default printer emits it, and it survives a re-parse unchanged.
+        let printed = SwimTextPrinter.print(workout)
+        #expect(printed.contains("description: Aerobic threshold"))
+        #expect(SwimTextParser.parse(printed).document.workout.description == workout.description)
+    }
+
+    @Test("A multi-line description spans repeated keys and round-trips")
+    func multiLineDescription() throws {
+        let workout = Workout(description: "Line one.\nLine two.")
+        let text = SwimTextPrinter.print(workout)
+        // One "description:" line per physical line.
+        #expect(text.components(separatedBy: "description:").count - 1 == 2)
+        #expect(SwimTextParser.parse(text).document.workout.description == "Line one.\nLine two.")
+    }
+
     @Test("Metadata placeholders survive a print → parse → print round-trip")
     func metadataPlaceholdersPersist() {
         let workout = Workout(title: "New Workout", course: .scy, groups: [SpeedGroup(id: "A")])
         let text = SwimTextPrinter.print(workout, metadataPlaceholders: true)
-        for key in ["date:", "author:", "team:", "categories:", "tags:"] {
+        for key in ["date:", "author:", "team:", "description:", "categories:", "tags:"] {
             #expect(text.contains(key))
         }
         // After a round-trip (empty values parse to nil), placeholders persist

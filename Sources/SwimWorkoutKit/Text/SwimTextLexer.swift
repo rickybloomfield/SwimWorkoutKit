@@ -68,7 +68,7 @@ public enum SwimTextLexer {
     // MARK: - Line classification
 
     private static let metadataKeys: Set<String> = [
-        "date", "author", "team", "course", "categories", "tags", "total", "groups", "notes",
+        "date", "author", "team", "description", "course", "categories", "tags", "total", "groups", "notes",
     ]
 
     private static func tokenizeLine(_ line: Substring, into tokens: inout [SwimTextToken]) {

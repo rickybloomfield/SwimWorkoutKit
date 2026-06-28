@@ -45,6 +45,10 @@ public struct Workout: Codable, Sendable, Equatable {
     public var date: String?
     public var author: String?
     public var team: String?
+    /// A coach-authored description of the workout (its focus, intent, or the
+    /// day's theme). Distinct from ``notes``, which carries incidental
+    /// annotations such as "remember your fins".
+    public var description: String?
     /// Where the workout took place (pool / facility). Optional coordinates.
     public var location: WorkoutLocation?
     public var course: Course
@@ -64,6 +68,7 @@ public struct Workout: Codable, Sendable, Equatable {
         date: String? = nil,
         author: String? = nil,
         team: String? = nil,
+        description: String? = nil,
         course: Course = .scy,
         categories: [String] = [],
         tags: [String] = [],
@@ -78,6 +83,7 @@ public struct Workout: Codable, Sendable, Equatable {
         self.date = date
         self.author = author
         self.team = team
+        self.description = description
         self.location = location
         self.course = course
         self.categories = categories

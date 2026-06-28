@@ -23,6 +23,13 @@ public enum SwimTextPrinter {
         appendMetadata("date", workout.date, to: &lines, placeholder: metadataPlaceholders)
         appendMetadata("author", workout.author, to: &lines, placeholder: metadataPlaceholders)
         appendMetadata("team", workout.team, to: &lines, placeholder: metadataPlaceholders)
+        if let description = workout.description {
+            for descriptionLine in description.components(separatedBy: .newlines) {
+                lines.append("description: \(descriptionLine)")
+            }
+        } else if metadataPlaceholders {
+            lines.append("description:")
+        }
         lines.append("course: \(workout.course.label.lowercased())")
         appendMetadata("categories", workout.categories.isEmpty ? nil : workout.categories.joined(separator: ", "),
                        to: &lines, placeholder: metadataPlaceholders)

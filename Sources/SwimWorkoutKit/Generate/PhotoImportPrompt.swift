@@ -25,6 +25,9 @@ public enum PhotoImportPrompt {
         - Title: "# Title" on the first line. A stated grand total goes near the \
         top as "total: NNNN". Pre-calculated totals and per-section distance \
         summaries are NOT swims — never emit them as a set or "| note".
+        - If the page states a coach's description of the session (a sentence \
+        about the day's focus, intent, or theme — not a swim), put it near the \
+        top as "description: TEXT". Never invent one.
         - Keep coach wording you cannot encode as "| note" suffixes. NEVER invent \
         sets that are not in the input. Remove obvious non-workout noise \
         (timestamps, chat UI, page headers).

@@ -233,7 +233,7 @@ public enum SwimTextParser {
     // MARK: - Metadata
 
     private static let metadataKeys: Set<String> = [
-        "date", "author", "team", "course", "categories", "tags", "total", "groups", "notes",
+        "date", "author", "team", "description", "course", "categories", "tags", "total", "groups", "notes",
     ]
 
     /// Section names recognized even when the coach omits the "==" marker — so a
@@ -286,6 +286,9 @@ public enum SwimTextParser {
         case "date": workout.date = value.isEmpty ? nil : value
         case "author": workout.author = value.isEmpty ? nil : value
         case "team": workout.team = value.isEmpty ? nil : value
+        case "description":
+            guard !value.isEmpty else { break }
+            workout.description = workout.description.map { "\($0)\n\(value)" } ?? value
         case "notes":
             guard !value.isEmpty else { break }
             workout.notes = workout.notes.map { "\($0)\n\(value)" } ?? value

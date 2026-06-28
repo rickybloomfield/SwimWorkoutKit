@@ -7,6 +7,7 @@ SwimText is the human-readable companion to the Open Swim Workout JSON format: t
 ```
 # Friday — Sprint                      ← title
 date: 2026-06-05                       ← metadata (before any content)
+description: Sharpen race speed        ← coach's summary of the session
 course: scy                            ← scy | scm | lcm
 categories: sprint                     ← comma-separated
 groups: A "Lanes 1-2" 1:15; B "Lanes 3-4" 1:25; C "Lanes 5-6" 1:40
@@ -27,7 +28,7 @@ rest 2:00 | between sets               ← standalone rest
 100 choice easy
 ```
 
-Metadata keys: `date`, `author`, `team`, `course`, `categories`, `tags`, `total`, `groups`, `notes` — recognized only before the first content line, so `Warmup: 800` can never be eaten as metadata.
+Metadata keys: `date`, `author`, `team`, `description`, `course`, `categories`, `tags`, `total`, `groups`, `notes` — recognized only before the first content line, so `Warmup: 800` can never be eaten as metadata. `description` is a coach's summary of the session; repeat the key to span lines.
 
 ## Set lines
 

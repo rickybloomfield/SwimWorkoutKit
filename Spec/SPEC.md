@@ -33,6 +33,7 @@ A companion human-readable notation, **SwimText**, round-trips to and from this 
 | `title` | string? | |
 | `date` | string? | ISO-8601 calendar date (`2026-06-10`) |
 | `author`, `team` | string? | |
+| `description` | string? | Coach-authored summary of the session (its focus, intent, or theme). Distinct from `notes`. |
 | `location` | object? | Where it took place. `{ "name", "latitude"?, "longitude"?, "address"? }` |
 | `course` | object | `{ "length": 25, "unit": "yd" \| "m" }`. SCY = 25 yd, SCM = 25 m, LCM = 50 m |
 | `categories` | string[] | Open list. Recommended: `sprint`, `distance`, `im`, `stroke`, `kick`, `basic`, `triathlon`, `openwater`, `lowvolume`, `test` |
