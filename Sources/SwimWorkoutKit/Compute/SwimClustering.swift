@@ -12,12 +12,16 @@ public struct RecordedSwim: Sendable, Equatable, Identifiable, Codable {
     /// Meters, when the source recorded distance.
     public var distanceMeters: Double?
     public var activeEnergyKcal: Double?
+    /// Pool length in meters, when the source recorded one — lets consumers
+    /// present the swim in the pool's own unit (22.86 m ⇒ a yard pool).
+    public var lapLengthMeters: Double?
     public var sourceBundleID: String
     public var sourceName: String
 
     public init(
         id: UUID, start: Date, end: Date,
         distanceMeters: Double? = nil, activeEnergyKcal: Double? = nil,
+        lapLengthMeters: Double? = nil,
         sourceBundleID: String, sourceName: String
     ) {
         self.id = id
@@ -25,6 +29,7 @@ public struct RecordedSwim: Sendable, Equatable, Identifiable, Codable {
         self.end = end
         self.distanceMeters = distanceMeters
         self.activeEnergyKcal = activeEnergyKcal
+        self.lapLengthMeters = lapLengthMeters
         self.sourceBundleID = sourceBundleID
         self.sourceName = sourceName
     }
