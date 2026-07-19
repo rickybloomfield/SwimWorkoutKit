@@ -225,7 +225,7 @@ public enum WorkoutGenerator {
             return strokeMain(budget: budget, ctx: &ctx)
         case .kick:
             return kickMain(budget: budget, ctx: &ctx)
-        case .basic, .lowVolume, .triathlon:
+        case .basic, .lowVolume, .triathlon, .free, .mixed:
             return basicMain(budget: budget, ctx: &ctx)
         }
     }

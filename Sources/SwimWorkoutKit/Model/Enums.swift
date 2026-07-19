@@ -63,6 +63,8 @@ public enum WorkoutCategory: String, Codable, Sendable, CaseIterable, Hashable {
     case im
     case stroke
     case kick
+    case free
+    case mixed
     case basic
     case triathlon
     case openWater = "openwater"
