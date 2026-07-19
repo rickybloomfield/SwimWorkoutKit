@@ -25,6 +25,11 @@ final class SwimContextBar: UIInputView {
     private let scroll = UIScrollView()
     private let stack = UIStackView()
     private let hint = UILabel()
+    private let dismissButton = UIButton(type: .system)
+
+    /// Called when the hide-keyboard button is tapped. The bar lives in the
+    /// keyboard window, so the owning text view resigns on its behalf.
+    var onDismiss: (() -> Void)?
 
     init() {
         super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 44), inputViewStyle: .keyboard)
@@ -48,9 +53,18 @@ final class SwimContextBar: UIInputView {
         hint.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hint)
 
+        dismissButton.setImage(UIImage(systemName: "keyboard.chevron.compact.down"), for: .normal)
+        dismissButton.tintColor = .secondaryLabel
+        dismissButton.accessibilityLabel = "Hide Keyboard"
+        dismissButton.addAction(UIAction { [weak self] _ in self?.onDismiss?() }, for: .touchUpInside)
+        dismissButton.setContentHuggingPriority(.required, for: .horizontal)
+        dismissButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(dismissButton)
+
         NSLayoutConstraint.activate([
             scroll.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            scroll.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: dismissButton.leadingAnchor, constant: -8),
             scroll.topAnchor.constraint(equalTo: topAnchor),
             scroll.bottomAnchor.constraint(equalTo: bottomAnchor),
 
@@ -61,7 +75,11 @@ final class SwimContextBar: UIInputView {
             stack.heightAnchor.constraint(equalTo: scroll.frameLayoutGuide.heightAnchor),
 
             hint.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            hint.trailingAnchor.constraint(lessThanOrEqualTo: dismissButton.leadingAnchor, constant: -8),
             hint.centerYAnchor.constraint(equalTo: centerYAnchor),
+
+            dismissButton.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            dismissButton.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
     }
 

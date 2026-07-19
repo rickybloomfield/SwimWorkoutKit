@@ -70,7 +70,9 @@ public final class SwimTextView: UITextView {
         font = swimFont
         textColor = PlatformColor(swimTheme.plain)
         typingAttributes = baseAttributes
+        keyboardDismissMode = .interactive
         inputAccessoryView = contextBar
+        contextBar.onDismiss = { [weak self] in self?.resignFirstResponder() }
     }
 
     private var baseAttributes: [NSAttributedString.Key: Any] {
