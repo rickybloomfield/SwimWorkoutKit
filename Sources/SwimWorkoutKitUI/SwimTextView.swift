@@ -70,7 +70,14 @@ public final class SwimTextView: UITextView {
         font = swimFont
         textColor = PlatformColor(swimTheme.plain)
         typingAttributes = baseAttributes
-        keyboardDismissMode = .interactive
+        // `WithAccessory` so the context bar tracks the drag with the keyboard;
+        // plain .interactive leaves the accessory docked mid-gesture, colliding
+        // with content that follows the keyboard's shrinking safe area.
+        if #available(iOS 17.0, *) {
+            keyboardDismissMode = .interactiveWithAccessory
+        } else {
+            keyboardDismissMode = .interactive
+        }
         inputAccessoryView = contextBar
         contextBar.onDismiss = { [weak self] in self?.resignFirstResponder() }
     }
