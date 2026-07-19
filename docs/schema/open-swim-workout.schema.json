@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://openswimworkout.org/schema/0.1/open-swim-workout.schema.json",
+  "$id": "https://openswimworkout.org/schema/0.2/open-swim-workout.schema.json",
   "title": "Open Swim Workout",
-  "description": "An open interchange format for prescribed swimming workouts. v0.1",
+  "description": "An open interchange format for prescribed swimming workouts. v0.2",
   "type": "object",
   "required": ["format", "version", "workout"],
   "properties": {
@@ -37,6 +37,7 @@
         "author": { "type": "string" },
         "team": { "type": "string" },
         "description": { "type": "string", "description": "Coach-authored summary of the session; distinct from notes" },
+        "location": { "$ref": "#/$defs/location" },
         "course": {
           "type": "object",
           "required": ["length", "unit"],
@@ -48,7 +49,7 @@
         "categories": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "Open list; recommended values: sprint, distance, im, stroke, kick, basic, triathlon, openwater, lowvolume, test"
+          "description": "Open list; recommended values: sprint, distance, im, stroke, kick, free, mixed, basic, triathlon, openwater, lowvolume, test"
         },
         "tags": { "type": "array", "items": { "type": "string" } },
         "groups": {
@@ -79,6 +80,17 @@
         "kind": { "enum": ["manual", "ocr", "generated", "ai", "imported"] },
         "attribution": { "type": "string" },
         "imageRef": { "type": "string" }
+      }
+    },
+    "location": {
+      "type": "object",
+      "description": "Where the workout took place. Coordinates and address are optional.",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "latitude": { "type": "number", "minimum": -90, "maximum": 90 },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "address": { "type": "string" }
       }
     },
     "section": {
