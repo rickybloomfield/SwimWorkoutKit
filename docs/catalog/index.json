@@ -8,8 +8,9 @@
       "author": "Ricky Bloomfield",
       "description": "A starter set of real swim workouts to seed a new library.",
       "url": "https://www.openswimworkout.com/catalog/ricky.swimworkouts",
-      "workoutCount": 2,
-      "updated": "2026-07-20"
+      "workoutCount": 13,
+      "updated": "2026-07-20",
+      "version": "1"
     }
   ]
 }
