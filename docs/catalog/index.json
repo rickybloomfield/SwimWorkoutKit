@@ -1,0 +1,15 @@
+{
+  "format": "open-swim-workout-catalog",
+  "version": "1",
+  "catalogs": [
+    {
+      "id": "ricky",
+      "name": "Ricky's Workouts",
+      "author": "Ricky Bloomfield",
+      "description": "A starter set of real swim workouts to seed a new library.",
+      "url": "https://www.openswimworkout.com/catalog/ricky.swimworkouts",
+      "workoutCount": 2,
+      "updated": "2026-07-20"
+    }
+  ]
+}
