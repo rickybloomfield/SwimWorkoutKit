@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
+#if canImport(CoreGraphics)
 import CoreGraphics
+#endif
 import Foundation
 
 /// Turns raw OCR line output into SwimText the parser can structure.
