@@ -79,51 +79,55 @@ public struct SwimTextTheme: Sendable {
     }
 
     // MARK: - Lookups
+    //
+    // Every question of *which* slot applies is answered by ``SwimTextPalette``
+    // in the core, and this type only supplies the value. That split is what
+    // lets a Compose or web renderer draw the same workout the same way without
+    // re-deriving rules like "a section called Loosen is a warmup" — see
+    // ``SwimTextRole``.
 
     public func color(for stroke: Stroke) -> Color { strokeColors[stroke] ?? plain }
     public func color(for activity: Activity) -> Color { activityColors[activity] ?? plain }
     public func color(for level: EffortLevel) -> Color { effortLevelColors[level] ?? plain }
 
-    /// Section color by name: warmups read green, cool-downs gray, the rest blue.
-    public func sectionColor(for name: String) -> Color {
-        let lower = name.lowercased()
-        if lower.contains("warm") || lower.contains("loosen") || lower.contains("pre") {
-            return sectionWarmup
-        }
-        if lower.contains("cool") || lower.contains("down") {
-            return sectionCooldown
-        }
-        return sectionDefault
-    }
-
-    /// The color for a lexer token.
-    public func color(for kind: SwimTextTokenKind) -> Color {
-        switch kind {
+    /// The color for a semantic slot.
+    public func color(for role: SwimTextRole) -> Color {
+        switch role {
+        case .plain: return plain
         case .title: return title
-        case .section(let name): return sectionColor(for: name)
-        case .metadataKey: return metadataKey
-        case .metadataValue: return metadataValue
         case .repsDistance: return repsDistance
-        case .stroke(let stroke): return color(for: stroke)
-        case .activity(let activity): return color(for: activity)
-        case .effortLevel(let level): return color(for: level)
-        case .effortShape: return effortShape
-        case .percent: return percent
-        case .equipment: return equipment
         case .sendoff: return sendoff
         case .rest: return rest
         case .time: return time
         case .note: return note
         case .structure: return structure
+        case .metadataKey: return metadataKey
+        case .metadataValue: return metadataValue
+        case .effortShape: return effortShape
+        case .percent: return percent
+        case .equipment: return equipment
+        case .sectionWarmup: return sectionWarmup
+        case .sectionCooldown: return sectionCooldown
+        case .sectionDefault: return sectionDefault
+        case .stroke(let stroke): return color(for: stroke)
+        case .activity(let activity): return color(for: activity)
+        case .effortLevel(let level): return color(for: level)
         }
+    }
+
+    /// Section color by name: warmups read green, cool-downs gray, the rest blue.
+    public func sectionColor(for name: String) -> Color {
+        color(for: SwimTextPalette.sectionRole(for: name))
+    }
+
+    /// The color for a lexer token.
+    public func color(for kind: SwimTextTokenKind) -> Color {
+        color(for: SwimTextPalette.role(for: kind))
     }
 
     /// Whether a token reads with emphasis (heavier weight) when highlighted.
     public func isEmphasized(_ kind: SwimTextTokenKind) -> Bool {
-        switch kind {
-        case .title, .section, .repsDistance, .sendoff: return true
-        default: return false
-        }
+        SwimTextPalette.isEmphasized(kind)
     }
 
     // MARK: - Standard palette
