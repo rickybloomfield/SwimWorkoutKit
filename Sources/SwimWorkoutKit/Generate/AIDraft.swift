@@ -68,12 +68,17 @@ public enum AIDraftConverter {
     /// Converts a draft into a real workout: enum mapping with safe
     /// fallbacks, distances snapped to 25s, send-offs computed from lane
     /// base paces (rest-based fallback), optional exact scaling.
+    ///
+    /// The kit never guesses which model wrote the draft — it marks the
+    /// workout `.ai` and leaves attribution to the caller, which is the only
+    /// side that knows the provider. Pass `attribution` to name it.
     public static func workout(
         from draft: AIDraft,
         course: Course,
         groups: [SpeedGroup],
         targetDistance: Int?,
-        paceModel: PaceModel = .default
+        paceModel: PaceModel = .default,
+        attribution: String? = nil
     ) -> Workout {
         var sections: [WorkoutSection] = []
         for draftSection in draft.sections {
@@ -99,7 +104,7 @@ public enum AIDraftConverter {
             categories: [],
             groups: groups,
             sections: sections,
-            source: WorkoutSource(kind: .ai, attribution: "Apple Intelligence (on-device)")
+            source: WorkoutSource(kind: .ai, attribution: attribution)
         )
 
         tidyEnds(&workout)

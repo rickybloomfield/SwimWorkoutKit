@@ -164,4 +164,20 @@ struct AIDraftConverterTests {
         #expect(workout.sections.count == 1)
         #expect(workout.sections[0].name == "Real")
     }
+
+    @Test("Attribution is the caller's to name, not the kit's")
+    func attribution() {
+        let unattributed = AIDraftConverter.workout(
+            from: draft(), course: .scy, groups: groups, targetDistance: nil
+        )
+        #expect(unattributed.source?.kind == .ai)
+        #expect(unattributed.source?.attribution == nil)
+
+        let attributed = AIDraftConverter.workout(
+            from: draft(), course: .scy, groups: groups, targetDistance: nil,
+            attribution: "Test Provider"
+        )
+        #expect(attributed.source?.kind == .ai)
+        #expect(attributed.source?.attribution == "Test Provider")
+    }
 }
