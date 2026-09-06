@@ -16,6 +16,10 @@ final class SwimContextBar: UIInputView {
     /// One chip. Most carry a `menu` (swap a value, or add a modifier); a few
     /// carry a direct `action` instead (e.g. start an inline comment).
     struct Item {
+        /// Stable key for ``updateChip(id:title:menu:)`` — the field kind's raw
+        /// value for a swap chip, nil for the Add and Note chips, which carry
+        /// no state that changes while their menu is open.
+        var id: String? = nil
         let title: String
         let systemImage: String?
         var menu: UIMenu? = nil
@@ -24,6 +28,10 @@ final class SwimContextBar: UIInputView {
 
     private let scroll = UIScrollView()
     private let stack = UIStackView()
+    /// The live label and menu source of each identified chip, so one chip can
+    /// be updated without rebuilding the stack. Rebuilt by ``configure(items:)``.
+    private var chipLabels: [String: UILabel] = [:]
+    private var chipButtons: [String: UIButton] = [:]
     private let hint = UILabel()
     private let dismissButton = UIButton(type: .system)
 
@@ -92,6 +100,8 @@ final class SwimContextBar: UIInputView {
     /// hint so the affordance is discoverable without crowding the keyboard.
     func configure(items: [Item]) {
         stack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        chipLabels.removeAll()
+        chipButtons.removeAll()
         hint.isHidden = !items.isEmpty
         scroll.isHidden = items.isEmpty
         guard !items.isEmpty else {
@@ -101,6 +111,18 @@ final class SwimContextBar: UIInputView {
         for item in items {
             stack.addArrangedSubview(makeChip(item))
         }
+    }
+
+    /// Updates one chip's title and menu without rebuilding the bar.
+    ///
+    /// A full ``configure(items:)`` removes the chip a presented menu is
+    /// anchored to, which dismisses that menu — so a multi-select list that
+    /// stays open (`keepsMenuPresented`) can't be refreshed that way. Assigning
+    /// `menu` on the live button asks UIKit to re-resolve the menu in place,
+    /// which re-runs an uncached deferred element and redraws its checkmarks.
+    func updateChip(id: String, title: String, menu: UIMenu) {
+        chipLabels[id]?.text = title
+        chipButtons[id]?.menu = menu
     }
 
     /// A chip is a filled pill (the tappable affordance) with an icon+value on
@@ -157,6 +179,11 @@ final class SwimContextBar: UIInputView {
         }
         row.addArrangedSubview(label)
         container.addSubview(row)
+
+        if let id = item.id {
+            chipLabels[id] = label
+            chipButtons[id] = button
+        }
 
         NSLayoutConstraint.activate([
             container.heightAnchor.constraint(equalToConstant: 32),

@@ -139,7 +139,8 @@ public final class SwimTextView: UITextView {
         contextSignature = signature
 
         var items = fields.map {
-            SwimContextBar.Item(title: SwimTextFieldStyle.chipTitle(for: $0),
+            SwimContextBar.Item(id: $0.kind.rawValue,
+                                title: SwimTextFieldStyle.chipTitle(for: $0),
                                 systemImage: SwimTextFieldStyle.icon($0.kind),
                                 menu: menu(for: $0, in: text))
         }
@@ -230,7 +231,12 @@ public final class SwimTextView: UITextView {
             guard let self else { completion([]); return }
             let current = self.currentCategoryList()
             let actions = SwimTextFieldResolver.rawOptions(for: .categories).map { raw in
+                // A stable identifier lets UIKit match each option to the one it
+                // is already showing when the menu is rebuilt under an open
+                // list; freshly generated identifiers read as different actions,
+                // and the redrawn state is dropped.
                 UIAction(title: SwimTextFieldStyle.optionLabel(raw, kind: .categories),
+                         identifier: UIAction.Identifier("swimtext.category.\(raw)"),
                          attributes: [.keepsMenuPresented],
                          state: current.contains(raw) ? .on : .off) { [weak self] _ in
                     self?.toggleCategory(raw)
@@ -241,13 +247,23 @@ public final class SwimTextView: UITextView {
         return UIMenu(title: SwimTextFieldStyle.menuTitle(.categories), children: [deferred])
     }
 
-    /// The categories currently on the caret's line.
+    /// The categories field for the caret's line, falling back to the one the
+    /// document declares. Presenting a chip's menu can momentarily drop the
+    /// caret (see ``refreshContextBar()``), and a dropped caret resolves to the
+    /// first line — which carries no categories field, so every option would
+    /// read as off just when the menu is being built.
+    private func categoriesField(in text: String) -> SwimTextField? {
+        if let caret = caretIndex(in: text),
+           let field = SwimTextFieldResolver.fields(in: text, onLineContaining: caret)
+            .first(where: { $0.kind == .categories }) {
+            return field
+        }
+        return SwimTextFieldResolver.fields(in: text).first(where: { $0.kind == .categories })
+    }
+
+    /// The categories currently set on the workout.
     private func currentCategoryList() -> [String] {
-        let text = self.text ?? ""
-        guard let caret = caretIndex(in: text),
-              let field = SwimTextFieldResolver.fields(in: text, onLineContaining: caret)
-                .first(where: { $0.kind == .categories })
-        else { return [] }
+        guard let field = categoriesField(in: self.text ?? "") else { return [] }
         return SwimTextFieldStyle.categoryList(field.currentRaw)
     }
 
@@ -257,6 +273,18 @@ public final class SwimTextView: UITextView {
         var list = currentCategoryList()
         if let index = list.firstIndex(of: raw) { list.remove(at: index) } else { list.append(raw) }
         setMetadataValue(list.joined(separator: ", "))
+        // The bar rebuild stays suppressed so the open list keeps the chip it is
+        // anchored to — which also leaves that chip holding the title and the
+        // checkmarks it was built with. Refresh just this one, in place.
+        refreshCategoryChip()
+    }
+
+    /// Re-renders the categories chip against the text as it now stands.
+    private func refreshCategoryChip() {
+        guard let field = categoriesField(in: self.text ?? "") else { return }
+        contextBar.updateChip(id: SwimTextField.Kind.categories.rawValue,
+                              title: SwimTextFieldStyle.chipTitle(for: field),
+                              menu: categoriesMenu())
     }
 
     /// Relative-date shortcuts plus a full calendar.
